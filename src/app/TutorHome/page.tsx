@@ -1,12 +1,29 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
+  const [question, setQuestion] = useState("");
+  const [level, setLevel] = useState("Middle School");
+  const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleAIButtonClick = () => {
-    router.push("/aitutor"); // Navigate to the AI Tutor screen
+  const handleSubmit = async () => {
+    if (!question) return;
+    setLoading(true);
+    setAnswer("");
+    try {
+      const response = await fetch("/api/tutor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, level }),
+      });
+      const data = await response.json();
+      setAnswer(data.answer);
+    } catch (error) {
+      setAnswer("Error fetching response. Please try again.");
+    }
+    setLoading(false);
   };
 
   return (
@@ -14,18 +31,12 @@ export default function Home() {
       <div className="text-center max-w-3xl">
         {/* Logo and Header */}
         <div className="flex flex-col items-center">
-          <img
-            src="/logo.png"
-            alt="LlamaTutor Logo"
-            className="w-12 h-12 mb-2"
-          />
+
           <h1 className="text-5xl font-bold text-gray-900">
             Your Personal <span className="text-blue-600">Tutor</span>
           </h1>
           <p className="mt-4 text-gray-600">
-            Enter a topic you want to learn about along with the education level
-            you want to be taught at, and generate a personalized tutor tailored
-            to you!
+            Enter a topic you want to learn about along with the education level you want to be taught at, and generate a personalized tutor tailored to you!
           </p>
         </div>
 
@@ -33,37 +44,49 @@ export default function Home() {
         <div className="mt-8 flex items-center justify-center space-x-4">
           <input
             type="text"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
             placeholder="Teach me about..."
             className="w-1/2 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <select className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+            className="px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
             <option>Middle School</option>
             <option>High School</option>
             <option>Undergraduate</option>
             <option>Graduate</option>
           </select>
           <button
-            onClick={handleAIButtonClick}
+            onClick={handleSubmit}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"
           >
             →
           </button>
         </div>
 
+        {/* AI Response Section */}
+        <div className="mt-6">
+          {loading ? (
+            <p className="text-blue-600">Generating response...</p>
+          ) : (
+            answer && <p className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">{answer}</p>
+          )}
+        </div>
+
         {/* Quick Topics */}
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <button className="px-4 py-2 bg-red-100 text-red-600 rounded-full shadow-md hover:bg-red-200">
-            🏀 Basketball
-          </button>
-          <button className="px-4 py-2 bg-yellow-100 text-yellow-600 rounded-full shadow-md hover:bg-yellow-200">
-            🤖 Machine Learning
-          </button>
-          <button className="px-4 py-2 bg-green-100 text-green-600 rounded-full shadow-md hover:bg-green-200">
-            💰 Personal Finance
-          </button>
-          <button className="px-4 py-2 bg-blue-100 text-blue-600 rounded-full shadow-md hover:bg-blue-200">
-            🇺🇸 U.S. History
-          </button>
+          {["Basketball", "Machine Learning", "Personal Finance", "U.S. History"].map((topic) => (
+            <button
+              key={topic}
+              onClick={() => setQuestion(topic)}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-full shadow-md hover:bg-gray-300"
+            >
+              {topic}
+            </button>
+          ))}
         </div>
       </div>
     </main>
