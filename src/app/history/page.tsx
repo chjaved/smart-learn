@@ -1,4 +1,5 @@
 import HistoryComponent from "@/components/HistoryComponent";
+import Footer from "@/components/Footer"; // Import Footer Component
 import { getAuthSession } from "@/lib/nextauth";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,22 +15,28 @@ const History = async (props: Props) => {
   if (!session?.user) {
     return redirect("/");
   }
+
   return (
-    <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[400px]">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold">History</CardTitle>
-            <Link className={buttonVariants()} href="/dashboard">
-              <LucideLayoutDashboard className="mr-2" />
-              Back to Dashboard
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent className="max-h-[60vh] overflow-scroll">
-          <HistoryComponent limit={100} userId={session.user.id} />
-        </CardContent>
-      </Card>
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow flex items-center justify-center">
+        <div className="w-[400px]">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl font-bold">History</CardTitle>
+                <Link className={buttonVariants()} href="/dashboard">
+                  <LucideLayoutDashboard className="mr-2" />
+                  Back to Dashboard
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent className="max-h-[60vh] overflow-scroll">
+              <HistoryComponent limit={100} userId={session.user.id} />
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };

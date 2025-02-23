@@ -3,13 +3,13 @@ import { prisma } from "@/lib/db";
 import { getAuthSession } from "@/lib/nextauth";
 import { LucideLayoutDashboard } from "lucide-react";
 import Link from "next/link";
-
 import { redirect } from "next/navigation";
 import React from "react";
 import ResultsCard from "@/components/statistics/ResultsCard";
 import AccuracyCard from "@/components/statistics/AccuracyCard";
 import TimeTakenCard from "@/components/statistics/TimeTakenCard";
 import QuestionsList from "@/components/statistics/QuestionsList";
+import Footer from "@/components/Footer"; // Import Footer Component
 
 type Props = {
   params: {
@@ -34,10 +34,7 @@ const Statistics = async ({ params: { gameId } }: Props) => {
 
   if (game.gameType === "mcq") {
     let totalCorrect = game.questions.reduce((acc, question) => {
-      if (question.isCorrect) {
-        return acc + 1;
-      }
-      return acc;
+      return acc + (question.isCorrect ? 1 : 0);
     }, 0);
     accuracy = (totalCorrect / game.questions.length) * 100;
   } else if (game.gameType === "open_ended") {
@@ -49,8 +46,8 @@ const Statistics = async ({ params: { gameId } }: Props) => {
   accuracy = Math.round(accuracy * 100) / 100;
 
   return (
-    <>
-      <div className="p-8 mx-auto max-w-7xl">
+    <div className="flex flex-col min-h-screen">
+      <div className="p-8 mx-auto max-w-7xl flex-grow">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-3xl font-bold tracking-tight">Summary</h2>
           <div className="flex items-center space-x-2">
@@ -71,7 +68,10 @@ const Statistics = async ({ params: { gameId } }: Props) => {
         </div>
         <QuestionsList questions={game.questions} />
       </div>
-    </>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
 };
 

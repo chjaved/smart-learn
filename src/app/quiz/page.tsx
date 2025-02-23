@@ -1,8 +1,8 @@
 import React from "react";
-
 import { getAuthSession } from "@/lib/nextauth";
 import { redirect } from "next/navigation";
 import QuizCreation from "@/components/forms/QuizCreation";
+import Footer from "@/components/Footer"; // Import Footer Component
 
 export const metadata = {
   title: "Quiz | Smart Learn",
@@ -20,7 +20,17 @@ const Quiz = async ({ searchParams }: Props) => {
   if (!session?.user) {
     redirect("/");
   }
-  return <QuizCreation topic={searchParams.topic ?? ""} />;
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow">
+        <QuizCreation topic={searchParams.topic ?? ""} />
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
 };
 
 export default Quiz;

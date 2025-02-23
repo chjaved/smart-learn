@@ -1,7 +1,9 @@
-import { FaUserTie, FaUser, FaUsers } from "react-icons/fa";
+import { FaUserTie, FaUser } from "react-icons/fa";
+import Footer from "@/components/Footer"; // Import the Footer component
 
 const AboutUs = () => {
   return (
+    <div className="flex flex-col min-h-screen">
     <main className="p-8 mx-auto max-w-7xl">
       <h1 className="text-4xl font-bold text-center mb-8">About Us</h1>
 
@@ -36,73 +38,45 @@ const AboutUs = () => {
       <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4 text-center">Our Core Values</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div className="flex flex-col items-center">
-            <div className="p-4 bg-orange-100 rounded-full shadow-lg mb-4">
-              <i className="fas fa-users text-5xl text-orange-600" />
+          {[
+            { icon: "fas fa-users", color: "orange", title: "Community", description: "We believe in fostering a strong learning community that thrives on collaboration, support, and shared growth." },
+            { icon: "fas fa-lightbulb", color: "pink", title: "Innovation", description: "Constant innovation is at the heart of what we do. We strive to bring cutting-edge learning experiences to our users." },
+            { icon: "fas fa-arrow-up", color: "yellow", title: "Growth", description: "We are committed to helping individuals and organizations grow by providing personalized, dynamic learning paths." },
+            { icon: "fas fa-globe", color: "teal", title: "Global Reach", description: "Our platform is designed to be globally accessible, enabling learners from all parts of the world to access high-quality education." }
+          ].map((value, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div className={`p-4 bg-${value.color}-100 rounded-full shadow-lg mb-4`}>
+                <i className={`${value.icon} text-5xl text-${value.color}-600`} />
+              </div>
+              <h3 className="text-xl font-semibold">{value.title}</h3>
+              <p className="text-gray-600 text-center">{value.description}</p>
             </div>
-            <h3 className="text-xl font-semibold">Community</h3>
-            <p className="text-gray-600 text-center">
-              We believe in fostering a strong learning community that thrives on collaboration, support, and shared growth.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="p-4 bg-pink-100 rounded-full shadow-lg mb-4">
-              <i className="fas fa-lightbulb text-5xl text-pink-600" />
-            </div>
-            <h3 className="text-xl font-semibold">Innovation</h3>
-            <p className="text-gray-600 text-center">
-              Constant innovation is at the heart of what we do. We strive to bring cutting-edge learning experiences to our users.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="p-4 bg-yellow-100 rounded-full shadow-lg mb-4">
-              <i className="fas fa-arrow-up text-5xl text-yellow-600" />
-            </div>
-            <h3 className="text-xl font-semibold">Growth</h3>
-            <p className="text-gray-600 text-center">
-              We are committed to helping individuals and organizations grow by providing personalized, dynamic learning paths.
-            </p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="p-4 bg-teal-100 rounded-full shadow-lg mb-4">
-              <i className="fas fa-globe text-5xl text-teal-600" />
-            </div>
-            <h3 className="text-xl font-semibold">Global Reach</h3>
-            <p className="text-gray-600 text-center">
-              Our platform is designed to be globally accessible, enabling learners from all parts of the world to access high-quality education.
-            </p>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* Team Section */}
-      <section>
+      <section className="mb-12">
         <h2 className="text-3xl font-semibold mb-4 text-center">Meet Our Team</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div className="flex flex-col items-center text-center">
-            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
-              <FaUserTie className="text-5xl text-gray-700" />
+          {[
+            { name: "Javed Jabbar", role: "Group Leader", icon: <FaUserTie className="text-5xl text-gray-700" /> },
+            { name: "Tooba Kashif", role: "Group Member", icon: <FaUser className="text-5xl text-gray-700" /> },
+            { name: "Hina Kanwal", role: "Group Member", icon: <FaUser className="text-5xl text-gray-700" /> }
+          ].map((member, index) => (
+            <div key={index} className="flex flex-col items-center text-center">
+              <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">{member.icon}</div>
+              <h3 className="text-xl font-semibold">{member.name}</h3>
+              <p className="text-gray-600">{member.role}</p>
             </div>
-            <h3 className="text-xl font-semibold">Javed Jabbar</h3>
-            <p className="text-gray-600">Group Leader</p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
-              <FaUser className="text-5xl text-gray-700" />
-            </div>
-            <h3 className="text-xl font-semibold">Tooba Kashif</h3>
-            <p className="text-gray-600">Group Member</p>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
-              <FaUser className="text-5xl text-gray-700" />
-            </div>
-            <h3 className="text-xl font-semibold">Hina Kanwal</h3>
-            <p className="text-gray-600">Group Member</p>
-          </div>
+          ))}
         </div>
       </section>
+      
     </main>
+    {/* Footer */}
+    <Footer />
+    </div>
   );
 };
 
