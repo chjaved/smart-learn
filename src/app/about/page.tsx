@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { FaUserTie, FaUser, FaUsers } from "react-icons/fa";
 
 const AboutUs = () => {
   return (
@@ -9,7 +9,6 @@ const AboutUs = () => {
       <section className="grid gap-8 lg:grid-cols-2 mb-12">
         <div className="flex items-center gap-4">
           <div className="p-4 bg-blue-100 rounded-full shadow-lg">
-            {/* Mission Icon (Font Awesome) */}
             <i className="fas fa-bullseye text-4xl text-blue-600" />
           </div>
           <div>
@@ -22,7 +21,6 @@ const AboutUs = () => {
 
         <div className="flex items-center gap-4">
           <div className="p-4 bg-green-100 rounded-full shadow-lg">
-            {/* Vision Icon (Font Awesome) */}
             <i className="fas fa-eye text-4xl text-green-600" />
           </div>
           <div>
@@ -40,7 +38,6 @@ const AboutUs = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col items-center">
             <div className="p-4 bg-orange-100 rounded-full shadow-lg mb-4">
-              {/* Core Value Icon (Font Awesome) */}
               <i className="fas fa-users text-5xl text-orange-600" />
             </div>
             <h3 className="text-xl font-semibold">Community</h3>
@@ -50,7 +47,6 @@ const AboutUs = () => {
           </div>
           <div className="flex flex-col items-center">
             <div className="p-4 bg-pink-100 rounded-full shadow-lg mb-4">
-              {/* Core Value Icon (Font Awesome) */}
               <i className="fas fa-lightbulb text-5xl text-pink-600" />
             </div>
             <h3 className="text-xl font-semibold">Innovation</h3>
@@ -60,7 +56,6 @@ const AboutUs = () => {
           </div>
           <div className="flex flex-col items-center">
             <div className="p-4 bg-yellow-100 rounded-full shadow-lg mb-4">
-              {/* Core Value Icon (Font Awesome) */}
               <i className="fas fa-arrow-up text-5xl text-yellow-600" />
             </div>
             <h3 className="text-xl font-semibold">Growth</h3>
@@ -70,7 +65,6 @@ const AboutUs = () => {
           </div>
           <div className="flex flex-col items-center">
             <div className="p-4 bg-teal-100 rounded-full shadow-lg mb-4">
-              {/* Core Value Icon (Font Awesome) */}
               <i className="fas fa-globe text-5xl text-teal-600" />
             </div>
             <h3 className="text-xl font-semibold">Global Reach</h3>
@@ -86,37 +80,25 @@ const AboutUs = () => {
         <h2 className="text-3xl font-semibold mb-4 text-center">Meet Our Team</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="flex flex-col items-center text-center">
-            <Image
-              src="/images/team-member-1.jpg"
-              alt="Team Member"
-              width={200}
-              height={200}
-              className="rounded-full mb-4"
-            />
-            <h3 className="text-xl font-semibold">Jane Doe</h3>
-            <p className="text-gray-600">CEO & Co-founder</p>
+            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
+              <FaUserTie className="text-5xl text-gray-700" />
+            </div>
+            <h3 className="text-xl font-semibold">Javed Jabbar</h3>
+            <p className="text-gray-600">Group Leader</p>
           </div>
           <div className="flex flex-col items-center text-center">
-            <Image
-              src="/images/team-member-2.jpg"
-              alt="Team Member"
-              width={200}
-              height={200}
-              className="rounded-full mb-4"
-            />
-            <h3 className="text-xl font-semibold">John Smith</h3>
-            <p className="text-gray-600">CTO & Co-founder</p>
+            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
+              <FaUser className="text-5xl text-gray-700" />
+            </div>
+            <h3 className="text-xl font-semibold">Tooba Kashif</h3>
+            <p className="text-gray-600">Group Member</p>
           </div>
           <div className="flex flex-col items-center text-center">
-            <Image
-              src="/images/team-member-3.jpg"
-              alt="Team Member"
-              width={200}
-              height={200}
-              className="rounded-full mb-4"
-            />
-            <h3 className="text-xl font-semibold">Alice Johnson</h3>
-            <p className="text-gray-600">Lead Developer</p>
+            <div className="p-6 bg-gray-200 rounded-full shadow-lg mb-4">
+              <FaUser className="text-5xl text-gray-700" />
+            </div>
+            <h3 className="text-xl font-semibold">Hina Kanwal</h3>
+            <p className="text-gray-600">Group Member</p>
           </div>
         </div>
       </section>
