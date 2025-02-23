@@ -16,7 +16,7 @@ const AboutUs = () => {
           <div>
             <h2 className="text-3xl font-semibold mb-4">Our Mission</h2>
             <p className="text-lg text-gray-700">
-              At SmartLearn, we are on a mission to revolutionize the way knowledge is shared and learned. We aim to make learning accessible, engaging, and tailored to each individual’s needs, whether for personal growth, academic excellence, or professional development.
+              At Smart Learn, we are on a mission to revolutionize the way knowledge is shared and learned. We aim to make learning accessible, engaging, and tailored to each individual’s needs, whether for personal growth, academic excellence, or professional development.
             </p>
           </div>
         </div>

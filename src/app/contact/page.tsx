@@ -45,7 +45,7 @@ const ContactUs = () => {
                 <i className="fas fa-envelope text-4xl text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold">Email</h3>
-              <p className="text-gray-600 text-center">contact@smartlearn.com</p>
+              <p className="text-gray-600 text-center">contact@Smart Learn.com</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="p-4 bg-green-100 rounded-full shadow-lg mb-4">

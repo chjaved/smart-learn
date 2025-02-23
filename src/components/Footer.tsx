@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
         
         {/* Copyright */}
-        <p>&copy; {new Date().getFullYear()} SmartLearn. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Smart Learn. All rights reserved.</p>
         
         {/* Links */}
         <div className="flex space-x-6">
