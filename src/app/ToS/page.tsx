@@ -37,7 +37,7 @@ const TermsOfService = () => {
           <h2 className="text-2xl font-semibold mb-4">4. Contact Us</h2>
           <p className="text-gray-600">
             If you have any questions about these Terms of Service, please
-            contact us at <strong>support@smartlearn.com</strong>.
+            contact us at <strong>support@Smart Learn.com</strong>.
           </p>
         </section>
       </main>
