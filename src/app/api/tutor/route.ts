@@ -1,24 +1,44 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
-    const { topic, level } = await req.json();
+    const { question, level } = await req.json();
 
-    if (!topic || !level) {
-      return NextResponse.json({ error: "Missing topic or level" }, { status: 400 });
+    if (!question) {
+      return NextResponse.json({ error: "Question is required" }, { status: 400 });
     }
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const apiKey = process.env.DEEPSEEK_API_KEY; // Securely access API key
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "system", content: `Explain ${topic} for a ${level} student.` }],
+    if (!apiKey) {
+      return NextResponse.json({ error: "API key is missing" }, { status: 500 });
+    }
+
+    const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          { role: "system", content: `You are a tutor. Explain ${question} for a ${level} student in a clear and engaging way.` },
+        ],
+        max_tokens: 500,
+      }),
     });
 
-    return NextResponse.json({ response: response.choices[0].message.content });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || "Failed to fetch response from DeepSeek");
+    }
+
+    return NextResponse.json({ answer: data.choices[0]?.message?.content.trim() });
+
   } catch (error) {
-    console.error("Error fetching AI response:", error);
-    return NextResponse.json({ error: "Failed to fetch response" }, { status: 500 });
+    console.error("DeepSeek API error:", error);
+    return NextResponse.json({ error: "Error fetching response from DeepSeek." }, { status: 500 });
   }
 }

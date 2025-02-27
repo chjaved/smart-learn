@@ -24,7 +24,7 @@ const WordCloud = ({ formattedTopics }: Props) => {
         rotate={0}
         padding={10}
         fill={theme.theme === "dark" ? "white" : "black"}
-        onWordClick={(e, d) => {
+        onWordClick={(e: any, d: { text: string; }) => {
           router.push("/quiz?topic=" + d.text);
         }}
       />
