@@ -6,43 +6,54 @@ import Footer from "@/components/Footer"; // Importing Footer Component
 export default function Home() {
   const [question, setQuestion] = useState("");
   const [level, setLevel] = useState("Middle School");
-  const [answer, setAnswer] = useState("");
+  const [chatHistory, setChatHistory] = useState<{ question: string; answer: string }[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!question) return;
     setLoading(true);
-    setAnswer("");
+
     try {
       const response = await fetch("/api/tutor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, level }),
       });
+
       const data = await response.json();
-      setAnswer(data.answer);
+
+      // Append new message to chat history
+      setChatHistory((prev) => [
+        ...prev,
+        { question, answer: data.answer }
+      ]);
     } catch (error) {
-      setAnswer("Error fetching response. Please try again.");
+      setChatHistory((prev) => [
+        ...prev,
+        { question, answer: "Error fetching response. Please try again." }
+      ]);
     }
+
     setLoading(false);
+    setQuestion(""); // Clear input field after submission
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow bg-gradient-to-br from-white to-gray-100 flex items-center justify-center">
-        <div className="text-center max-w-3xl">
+        <div className="text-center max-w-3xl w-full p-6">
           {/* Logo and Header */}
           <div className="flex flex-col items-center">
             <h1 className="text-5xl font-bold text-gray-900">
               Your Personal <span className="text-blue-600">Tutor</span>
             </h1>
             <p className="mt-4 text-gray-600">
-              Enter a topic you want to learn about along with the education level you want to be taught at, and generate a personalized tutor tailored to you!
+              Enter a topic you want to learn about along with the education level, and get a personalized tutor experience!
             </p>
           </div>
 
           {/* Input Section */}
-          <div className="mt-8 flex items-center justify-center space-x-4">
+          <div className="mt-6 flex items-center justify-center space-x-4">
             <input
               type="text"
               value={question}
@@ -68,13 +79,17 @@ export default function Home() {
             </button>
           </div>
 
-          {/* AI Response Section */}
-          <div className="mt-6">
-            {loading ? (
-              <p className="text-blue-600">Generating response...</p>
-            ) : (
-              answer && <p className="mt-4 p-4 bg-gray-100 rounded-lg shadow-md">{answer}</p>
-            )}
+          {/* AI Chat History Section */}
+          <div className="mt-6 max-h-[500px] overflow-y-auto bg-white p-4 rounded-lg shadow-md text-left">
+            {chatHistory.map((chat, index) => (
+              <div key={index} className="mb-4">
+                <p className="font-semibold text-gray-800">You:</p>
+                <p className="p-2 bg-gray-200 rounded-md">{chat.question}</p>
+                <p className="font-semibold text-blue-600 mt-2">Tutor:</p>
+                <p className="p-2 bg-gray-100 rounded-md">{chat.answer}</p>
+              </div>
+            ))}
+            {loading && <p className="text-blue-600">Generating response...</p>}
           </div>
 
           {/* Quick Topics */}
