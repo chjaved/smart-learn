@@ -11,7 +11,9 @@ type Props = {
   };
 };
 
-const MCQPage = async ({ params: { gameId } }: Props) => {
+const MCQPage = async ({ params }: Props) => {
+  const gameId = params.gameId; // Fix: Extract gameId inside the function
+
   const session = await getAuthSession();
   if (!session?.user) {
     return redirect("/");

@@ -10,9 +10,7 @@ export const metadata = {
 };
 
 interface Props {
-  searchParams: {
-    topic?: string;
-  };
+  searchParams: { topic?: string };
 }
 
 const Quiz = async ({ searchParams }: Props) => {
@@ -21,10 +19,12 @@ const Quiz = async ({ searchParams }: Props) => {
     redirect("/");
   }
 
+    const topic = searchParams?.topic ?? ""; 
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-grow">
-        <QuizCreation topic={searchParams.topic ?? ""} />
+        <QuizCreation topic={topic} />
       </div>
 
       {/* Footer */}
