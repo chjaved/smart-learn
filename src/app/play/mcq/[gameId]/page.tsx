@@ -1,5 +1,4 @@
 import MCQ from "@/components/MCQ";
-import Footer from "@/components/Footer"; // Import Footer Component
 import { prisma } from "@/lib/db";
 import { getAuthSession } from "@/lib/nextauth";
 import { redirect } from "next/navigation";
@@ -11,16 +10,16 @@ type Props = {
   };
 };
 
-const MCQPage = async ({ params }: Props) => {
-  const gameId = params.gameId; // Fix: Extract gameId inside the function
-
+const MCQPage = async ({ params: { gameId } }: Props) => {
   const session = await getAuthSession();
   if (!session?.user) {
     return redirect("/");
   }
 
   const game = await prisma.game.findUnique({
-    where: { id: gameId },
+    where: {
+      id: gameId,
+    },
     include: {
       questions: {
         select: {
@@ -31,19 +30,10 @@ const MCQPage = async ({ params }: Props) => {
       },
     },
   });
-
   if (!game || game.gameType === "open_ended") {
     return redirect("/quiz");
   }
-
-  return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow">
-        <MCQ game={game} />
-      </main>
-      <Footer />
-    </div>
-  );
+  return <MCQ game={game} />;
 };
 
 export default MCQPage;
