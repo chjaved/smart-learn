@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/questions/route": {
-      "maxDuration": 300
-    }
-  }
-}
