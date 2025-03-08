@@ -39,9 +39,10 @@ export async function POST(req: Request) {
 
     console.log("API_URL:", process.env.API_URL);
 
-    // Fixing the API call to `/api/questions`
+    const API_URL = process.env.API_URL || "http://localhost:3000";
+
     const { data } = await axios.post(
-      "http://localhost:3000/api/questions",
+      `${API_URL}/api/questions`,
       { amount, topic, type },
       {
         headers: {
