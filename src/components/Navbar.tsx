@@ -20,6 +20,11 @@ const Navbar = async () => {
 
         {/* Navigation Links */}
         <div className="flex items-center space-x-6">
+          {session?.user && (
+            <Link href="/dashboard" className="hover:text-gray-700 dark:hover:text-white">
+              Dashboard
+            </Link>
+          )}
           <Link href="/about" className="hover:text-gray-700 dark:hover:text-white">About Us</Link>
           <Link href="/contact" className="hover:text-gray-700 dark:hover:text-white">Contact Us</Link>
           <Link href="/Competitor" className="hover:text-gray-700 dark:hover:text-white">Competitors</Link>
