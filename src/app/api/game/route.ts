@@ -101,8 +101,8 @@ export async function GET(req: Request) {
       );
     }
 
-    const url = new URL(req.url);
-    const gameId = url.searchParams.get("gameId");
+    const { searchParams } = new URL(req.url, `https://${req.headers.get("host")}`);
+    const gameId = searchParams.get("gameId");
 
     if (!gameId) {
       return NextResponse.json({ error: "You must provide a game id." }, { status: 400 });
