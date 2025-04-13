@@ -15,15 +15,15 @@ export async function strict_output(
   default_category: string = "",
   output_value_only: boolean = false,
   model: string = "gpt-3.5-turbo",
-  temperature: number = 0.7, // Lowered for accuracy
-  num_tries: number = 2, // Reduced to optimize API calls
+  temperature: number = 0.7,
+  num_tries: number = 2,
   verbose: boolean = false
-): Promise<{ question: string; answer: string }[]> {
-  const list_input: boolean = Array.isArray(user_prompt);
-  const dynamic_elements: boolean = /<.*?>/.test(JSON.stringify(output_format));
-  const list_output: boolean = /\[.*?\]/.test(JSON.stringify(output_format));
+): Promise<{ question: string; answer: string }[] | null> {
+  const list_input = Array.isArray(user_prompt);
+  const dynamic_elements = /<.*?>/.test(JSON.stringify(output_format));
+  const list_output = /\[.*?\]/.test(JSON.stringify(output_format));
 
-  let output_format_prompt: string = `
+  let output_format_prompt = `
     You are to output the following in JSON format: ${JSON.stringify(output_format)}.
     Do not put extra quotation marks or escape characters.
   `;
@@ -43,46 +43,55 @@ export async function strict_output(
         ],
       });
 
-      let res = response.choices[0]?.message?.content?.trim() ?? "";
+      const raw = response.choices[0]?.message?.content?.trim();
 
       if (verbose) {
         console.log("System prompt:", system_prompt + output_format_prompt);
         console.log("User prompt:", user_prompt);
-        console.log("GPT response:", res);
+        console.log("GPT raw response:", raw);
       }
 
-      // Ensure response is valid JSON
-      if (!res.startsWith("{") && !res.startsWith("[")) throw new Error("Invalid JSON response");
+      if (!raw || (!raw.startsWith("{") && !raw.startsWith("["))) {
+        throw new Error("GPT returned empty or invalid JSON format");
+      }
 
-      let output = JSON.parse(res);
+      let output = JSON.parse(raw);
 
-      if (list_input && !Array.isArray(output)) throw new Error("Output must be a list of JSON objects.");
+      if (list_input && !Array.isArray(output)) throw new Error("Expected array of JSON objects but got non-array.");
       if (!list_input) output = [output];
 
       for (let index = 0; index < output.length; index++) {
         for (const key in output_format) {
-          if (/<.*?>/.test(key)) continue; // Skip dynamic keys
+          if (/<.*?>/.test(key)) continue;
 
-          if (!(key in output[index])) throw new Error(`${key} missing in JSON output`);
+          if (!(key in output[index])) {
+            throw new Error(`Missing key "${key}" in GPT response`);
+          }
 
           if (Array.isArray(output_format[key])) {
             const choices = output_format[key] as string[];
             if (Array.isArray(output[index][key])) output[index][key] = output[index][key][0];
-            if (!choices.includes(output[index][key]) && default_category) output[index][key] = default_category;
-            if (output[index][key].includes(":")) output[index][key] = output[index][key].split(":")[0];
+            if (!choices.includes(output[index][key]) && default_category) {
+              output[index][key] = default_category;
+            }
+            if (typeof output[index][key] === "string" && output[index][key].includes(":")) {
+              output[index][key] = output[index][key].split(":")[0];
+            }
           }
         }
 
         if (output_value_only) {
-          output[index] = Object.values(output[index]).length === 1 ? output[index][Object.keys(output[index])[0]] : Object.values(output[index]);
+          output[index] = Object.values(output[index]).length === 1
+            ? output[index][Object.keys(output[index])[0]]
+            : Object.values(output[index]);
         }
       }
 
       return list_input ? output : output[0];
     } catch (e) {
-      console.log("Exception occurred:", e);
+      console.error("strict_output exception:", e);
     }
   }
 
-  return [];
+  return null; // This tells your API handler it failed
 }

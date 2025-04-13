@@ -4,6 +4,7 @@ import React from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Footer from "@/components/Footer"; // Import Footer Component
 import {
   Form,
   FormControl,
@@ -97,7 +98,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
   }
 
   return (
-    <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+    <div className="absolute -translate-x-1/2 top-24 left-1/2">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">Quiz Creation</CardTitle>
@@ -233,6 +234,8 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
       </Card>
     </div>
   );
+  {/* Footer */}
+  <Footer />
 };
 
 export default QuizCreation;

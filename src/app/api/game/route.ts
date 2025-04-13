@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { topic, type, amount } = quizCreationSchema.parse(body);
+    const { topic, type, amount, difficulty } = quizCreationSchema.parse(body);
 
     console.log("Creating game...");
     const game = await prisma.game.create({
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
         timeStarted: new Date(),
         userId: session.user.id,
         topic,
+        difficulty,
       },
     });
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
 
     const { data } = await axios.post(
       `${API_URL}/api/questions`,
-      { amount, topic, type },
+      { amount, topic, type, difficulty },
       {
         headers: {
           Cookie: req.headers.get("cookie") || "", // Pass authentication cookies
