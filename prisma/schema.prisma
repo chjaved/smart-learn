@@ -55,10 +55,17 @@ model Game {
   topic       String
   timeEnded   DateTime?
   gameType    GameType
+  difficulty  Difficulty // NEW FIELD
   questions   Question[]
   user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+enum Difficulty {
+  basic
+  intermediate
+  expert
 }
 
 model topic_count {

@@ -41,9 +41,15 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
   const [showLoader, setShowLoader] = React.useState(false);
   const [finishedLoading, setFinishedLoading] = React.useState(false);
   const { toast } = useToast();
+
   const { mutate: getQuestions, isLoading } = useMutation({
-    mutationFn: async ({ amount, topic, type }: Input) => {
-      const response = await axios.post("/api/game", { amount, topic, type });
+    mutationFn: async ({ amount, topic, type, difficulty }: Input) => {
+      const response = await axios.post("/api/game", {
+        amount,
+        topic,
+        type,
+        difficulty,
+      });
       return response.data;
     },
   });
@@ -54,6 +60,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
       topic: topicParam,
       type: "mcq",
       amount: 3,
+      difficulty: "basic",
     },
   });
 
@@ -62,14 +69,12 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
     getQuestions(data, {
       onError: (error) => {
         setShowLoader(false);
-        if (error instanceof AxiosError) {
-          if (error.response?.status === 500) {
-            toast({
-              title: "Error",
-              description: "Something went wrong. Please try again later.",
-              variant: "destructive",
-            });
-          }
+        if (error instanceof AxiosError && error.response?.status === 500) {
+          toast({
+            title: "Error",
+            description: "Something went wrong. Please try again later.",
+            variant: "destructive",
+          });
         }
       },
       onSuccess: ({ gameId }: { gameId: string }) => {
@@ -84,6 +89,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
       },
     });
   };
+
   form.watch();
 
   if (showLoader) {
@@ -110,13 +116,13 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
                       <Input placeholder="Enter a topic" {...field} />
                     </FormControl>
                     <FormDescription>
-                      Please provide any topic you would like to be quizzed on
-                      here.
+                      Please provide any topic you would like to be quizzed on.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="amount"
@@ -136,8 +142,52 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
                       />
                     </FormControl>
                     <FormDescription>
-                      You can choose how many questions you would like to be
-                      quizzed on here.
+                      Choose how many questions you'd like in the quiz.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Difficulty</FormLabel>
+                    <div className="flex gap-4">
+                      <Button
+                        type="button"
+                        variant={
+                          field.value === "basic" ? "default" : "outline"
+                        }
+                        onClick={() => field.onChange("basic")}
+                      >
+                        Basic
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={
+                          field.value === "intermediate"
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => field.onChange("intermediate")}
+                      >
+                        Intermediate
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={
+                          field.value === "expert" ? "default" : "outline"
+                        }
+                        onClick={() => field.onChange("expert")}
+                      >
+                        Expert
+                      </Button>
+                    </div>
+                    <FormDescription>
+                      Select the difficulty level of the quiz.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -147,15 +197,16 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
               <div className="flex justify-between">
                 <Button
                   variant={
-                    form.getValues("type") === "mcq" ? "default" : "secondary"
+                    form.getValues("type") === "mcq"
+                      ? "default"
+                      : "secondary"
                   }
                   className="w-1/2 rounded-none rounded-l-lg"
-                  onClick={() => {
-                    form.setValue("type", "mcq");
-                  }}
+                  onClick={() => form.setValue("type", "mcq")}
                   type="button"
                 >
-                  <CopyCheck className="w-4 h-4 mr-2" /> Multiple Choice
+                  <CopyCheck className="w-4 h-4 mr-2" />
+                  Multiple Choice
                 </Button>
                 <Separator orientation="vertical" />
                 <Button
@@ -168,9 +219,11 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
                   onClick={() => form.setValue("type", "open_ended")}
                   type="button"
                 >
-                  <BookOpen className="w-4 h-4 mr-2" /> Open Ended
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Open Ended
                 </Button>
               </div>
+
               <Button disabled={isLoading} type="submit">
                 Submit
               </Button>

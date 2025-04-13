@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 export const runtime = "nodejs";
-// export const maxDuration = 500;
 
 export async function POST(req: Request, res: Response) {
   try {
@@ -13,20 +12,31 @@ export async function POST(req: Request, res: Response) {
     if (!session?.user) {
       return NextResponse.json(
         { error: "You must be logged in to create a game." },
-        {
-          status: 401,
-        }
+        { status: 401 }
       );
     }
+
     const body = await req.json();
-    const { amount, topic, type } = getQuestionsSchema.parse(body);
+    const { amount, topic, type, difficulty } = getQuestionsSchema.parse(body);
+
+    const mcqPromptMap = {
+      basic: `Generate a simple and beginner-friendly multiple choice question about ${topic}. Use common terms. Answers should be short (max 15 words).`,
+      intermediate: `Generate a moderately challenging multiple choice question about ${topic}. Test conceptual understanding. Answers should be concise (max 15 words).`,
+      expert: `Generate a complex, expert-level multiple choice question about ${topic}. Encourage deep thinking. Keep each answer max 15 words.`,
+    };
+
+    const openEndedPromptMap = {
+      basic: `Generate a beginner-friendly open-ended question about ${topic}. Keep it clear and short. Answer in max 15 words.`,
+      intermediate: `Generate a moderately challenging open-ended question about ${topic}. Keep the answer under 15 words.`,
+      expert: `Generate an expert-level open-ended question about ${topic}. It should be analytical. Answer in max 15 words.`,
+    };
+
     let questions: any;
+
     if (type === "open_ended") {
       questions = await strict_output(
-        "You are a helpful AI that is able to generate a pair of question and answers, the length of each answer should not be more than 15 words, store all the pairs of answers and questions in a JSON array",
-        new Array(amount).fill(
-          `You are to generate a random hard open-ended questions about ${topic}`
-        ),
+        "You are a helpful AI that generates open-ended questions and answers. Store in a JSON array.",
+        new Array(amount).fill(openEndedPromptMap[difficulty]),
         {
           question: "question",
           answer: "answer with max length of 15 words",
@@ -34,10 +44,8 @@ export async function POST(req: Request, res: Response) {
       );
     } else if (type === "mcq") {
       questions = await strict_output(
-        "You are a helpful AI that is able to generate mcq questions and answers, the length of each answer should not be more than 15 words, store all answers and questions and options in a JSON array",
-        new Array(amount).fill(
-          `You are to generate a random hard mcq question about ${topic}`
-        ),
+        "You are a helpful AI that generates MCQ questions with short answers and options. Store in a JSON array.",
+        new Array(amount).fill(mcqPromptMap[difficulty]),
         {
           question: "question",
           answer: "answer with max length of 15 words",
@@ -47,29 +55,22 @@ export async function POST(req: Request, res: Response) {
         }
       );
     }
+
     return NextResponse.json(
-      {
-        questions: questions,
-      },
-      {
-        status: 200,
-      }
+      { questions },
+      { status: 200 }
     );
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
         { error: error.issues },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     } else {
       console.error("elle gpt error", error);
       return NextResponse.json(
         { error: "An unexpected error occurred." },
-        {
-          status: 500,
-        }
+        { status: 500 }
       );
     }
   }
