@@ -1,63 +1,101 @@
-import { AuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { type GetServerSidePropsContext } from "next";
+import {
+  getServerSession,
+  type NextAuthOptions,
+  type DefaultSession,
+} from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export const authOptions: AuthOptions = {
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email", placeholder: "email@example.com" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password required");
-        }
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+    } & DefaultSession["user"];
+  }
+}
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+  }
+}
 
-        if (!user || !user.password) {
-          throw new Error("No user found or no password set");
-        }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password as string);
-
-        if (!isValid) {
-          throw new Error("Incorrect password");
-        }
-
-        return {
-          id: user.id,
-          name: user.name || "",
-          email: user.email || "",
-          image: user.image || "",
-        };
-      },
-    }),
-  ],
-  pages: {
-    signIn: "/SignIn", // ✅ Only allowed keys
-    error: "/SignIn",   // Optional: custom error page
-  },
+export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
+    jwt: async ({ token }) => {
+      const db_user = await prisma.user.findFirst({
+        where: {
+          email: token?.email,
+        },
+      });
+      if (db_user) {
+        token.id = db_user.id;
       }
       return token;
     },
-    async session({ session, token }) {
-      if (token && session.user) {
-        session.user.id = token.id as string;
+    session: ({ session, token }) => {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name || 'Guest';  // Default name handling
+        session.user.email = token.email || ''; 
+        session.user.image = token.picture || '';
       }
       return session;
     },
   },
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    }),
+    CredentialsProvider({
+      name: "Email/Password",
+      credentials: {
+        email: {
+          label: "Email",
+          type: "email",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+        },
+      },
+      async authorize(credentials) {
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials?.email,
+          },
+        });
+
+        if (user && credentials?.password) {
+          const isValid = user.password && credentials?.password && await bcrypt.compare(credentials.password, user.password);
+          if (isValid) {
+            return {
+              id: user.id,
+              name: user.name || '',
+              email: user.email || '',
+              image: user.image || '',
+            };
+          }
+        }
+        return null; // Return null if credentials are invalid
+      },
+    }),
+  ],
+};
+
+export const getAuthSession = () => {
+  return getServerSession(authOptions);
 };

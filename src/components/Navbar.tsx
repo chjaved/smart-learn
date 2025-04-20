@@ -2,11 +2,11 @@ import Link from "next/link";
 import React from "react";
 import UserAccountNav from "./UserAccountNav";
 import { ThemeToggle } from "./ThemeToggle";
-import { getAuthSession } from "@/lib/nextauth";
+import { getAuthSession } from "@/lib/nextauth";  // Import the custom getAuthSession function
 import SignInButton from "./SignInButton";
 
 const Navbar = async () => {
-  const session = await getAuthSession();
+  const session = await getAuthSession();  // Use the custom getAuthSession function
 
   return (
     <div className="fixed inset-x-0 top-0 bg-white dark:bg-gray-950 z-[10] h-fit border-b border-zinc-300 py-2">
@@ -36,7 +36,12 @@ const Navbar = async () => {
         <div className="flex items-center">
           <ThemeToggle className="mr-4" />
           {session?.user ? (
-            <UserAccountNav user={session.user} />
+            <UserAccountNav user={{ 
+              id: session.user.id, 
+              name: session.user.name ?? 'Guest',  // Default value if name is null or undefined
+              email: session.user.email ?? '', 
+              image: session.user.image ?? '' 
+            }} />
           ) : (
             <SignInButton text={"Sign In"} />
           )}

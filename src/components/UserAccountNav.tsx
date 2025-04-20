@@ -15,7 +15,7 @@ import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 
 type Props = {
-  user: Pick<User, "name" | "image" | "email">;
+  user: Pick<User, "name" | "image" | "email"> & { id: string };  // Added id to the user type
 };
 
 const UserAccountNav = ({ user }: Props) => {
@@ -25,8 +25,8 @@ const UserAccountNav = ({ user }: Props) => {
         <UserAvatar
           className="w-10 h-10"
           user={{
-            name: user.name || null,
-            image: user.image || null,
+            name: user.name,
+            image: user.image,
           }}
         />
       </DropdownMenuTrigger>
