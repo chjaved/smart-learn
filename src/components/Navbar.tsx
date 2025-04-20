@@ -25,11 +25,11 @@ const Navbar = async () => {
               Dashboard
             </Link>
           )}
-          <Link href="/about" className="hover:text-gray-700 dark:hover:text-white">About Us</Link>
-          <Link href="/contact" className="hover:text-gray-700 dark:hover:text-white">Contact Us</Link>
-          <Link href="/Competitor" className="hover:text-gray-700 dark:hover:text-white">Competitors</Link>
           <Link href="/AITutor" className="hover:text-gray-700 dark:hover:text-white">AI Tutor</Link>
           <Link href="/pricing" className="hover:text-gray-700 dark:hover:text-white">Pricing</Link>
+          <Link href="/Competitor" className="hover:text-gray-700 dark:hover:text-white">Competitors</Link>
+          <Link href="/about" className="hover:text-gray-700 dark:hover:text-white">About Us</Link>
+          <Link href="/contact" className="hover:text-gray-700 dark:hover:text-white">Contact Us</Link>
         </div>
 
         {/* User Account and Theme Toggle */}

@@ -22,7 +22,7 @@ export default function LandingPage() {
     if (session?.user) {
       router.push("/quiz");
     } else {
-      router.push("/api/auth/signin");
+      router.push("SignIn");
     }
   };
 

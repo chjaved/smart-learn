@@ -1,70 +1,63 @@
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type NextAuthOptions,
-  type DefaultSession,
-} from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import { AuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
+import bcrypt from "bcryptjs";
 
-declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession["user"];
-  }
+export const authOptions: AuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "email@example.com" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password required");
+        }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
-}
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-  }
-}
+        if (!user || !user.password) {
+          throw new Error("No user found or no password set");
+        }
 
-export const authOptions: NextAuthOptions = {
+        const isValid = await bcrypt.compare(credentials.password, user.password as string);
+
+        if (!isValid) {
+          throw new Error("Incorrect password");
+        }
+
+        return {
+          id: user.id,
+          name: user.name || "",
+          email: user.email || "",
+          image: user.image || "",
+        };
+      },
+    }),
+  ],
+  pages: {
+    signIn: "/SignIn", // ✅ Only allowed keys
+    error: "/SignIn",   // Optional: custom error page
+  },
   session: {
     strategy: "jwt",
   },
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    jwt: async ({ token }) => {
-      const db_user = await prisma.user.findFirst({
-        where: {
-          email: token?.email,
-        },
-      });
-      if (db_user) {
-        token.id = db_user.id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
       }
       return token;
     },
-    session: ({ session, token }) => {
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.email = token.email;
-        session.user.image = token.picture;
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
       }
       return session;
     },
   },
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    }),
-  ],
-};
-
-export const getAuthSession = () => {
-  return getServerSession(authOptions);
 };
