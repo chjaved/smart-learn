@@ -41,13 +41,12 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  password      String?   // ✅ NEW: Password field for credentials login
   emailVerified DateTime?
   image         String?
   games         Game[]
   accounts      Account[]
   sessions      Session[]
-  chats         Chat[]
+  chats         Chat[] // ✅ Reverse relation to Chat model
 }
 
 model Game {
@@ -96,6 +95,9 @@ model Chat {
 
   @@index([userId])
 }
+
+
+
 
 enum Difficulty {
   basic
