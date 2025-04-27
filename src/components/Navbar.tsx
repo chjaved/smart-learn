@@ -36,12 +36,7 @@ const Navbar = async () => {
         <div className="flex items-center">
           <ThemeToggle className="mr-4" />
           {session?.user ? (
-            <UserAccountNav user={{ 
-              id: session.user.id, 
-              name: session.user.name ?? 'Guest',  // Default value if name is null or undefined
-              email: session.user.email ?? '', 
-              image: session.user.image ?? '' 
-            }} />
+            <UserAccountNav user={session.user} />
           ) : (
             <SignInButton text={"Sign In"} />
           )}
