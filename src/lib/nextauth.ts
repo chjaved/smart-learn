@@ -8,7 +8,6 @@ import {
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
-import bcrypt from "bcryptjs";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -35,9 +34,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     jwt: async ({ token }) => {
       const db_user = await prisma.user.findFirst({
-        where: {
-          email: token?.email,
-        },
+        where: { email: token?.email },
       });
       if (db_user) {
         token.id = db_user.id;
@@ -47,9 +44,9 @@ export const authOptions: NextAuthOptions = {
     session: ({ session, token }) => {
       if (token) {
         session.user.id = token.id;
-        session.user.name = token.name || 'Guest';  // Default name handling
-        session.user.email = token.email || ''; 
-        session.user.image = token.picture || '';
+        session.user.name = token.name ?? "Guest";
+        session.user.email = token.email ?? "";
+        session.user.image = token.picture ?? "";
       }
       return session;
     },
@@ -63,34 +60,29 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Email/Password",
       credentials: {
-        email: {
-          label: "Email",
-          type: "email",
-        },
-        password: {
-          label: "Password",
-          type: "password",
-        },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials.password) {
+          return null;
+        }
+
         const user = await prisma.user.findUnique({
-          where: {
-            email: credentials?.email,
-          },
+          where: { email: credentials.email },
         });
 
-        if (user && credentials?.password) {
-          const isValid = user.password && credentials?.password && await bcrypt.compare(credentials.password, user.password);
-          if (isValid) {
-            return {
-              id: user.id,
-              name: user.name || '',
-              email: user.email || '',
-              image: user.image || '',
-            };
-          }
+        // Simple plaintext password check instead of bcrypt
+        if (user && user.password === credentials.password) {
+          return {
+            id: user.id,
+            name: user.name ?? "",
+            email: user.email ?? "",
+            image: user.image ?? "",
+          };
         }
-        return null; // Return null if credentials are invalid
+
+        return null; // invalid credentials
       },
     }),
   ],
