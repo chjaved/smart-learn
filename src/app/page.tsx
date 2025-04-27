@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
+import { FaUser } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -30,7 +31,7 @@ export default function LandingPage() {
     if (session?.user) {
       router.push("/TutorHome");
     } else {
-      router.push("/api/auth/signin");
+      router.push("/SignIn");
     }
   };
 
@@ -116,26 +117,34 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* TEAM SECTION */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Meet the Creators</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-          {["Alex", "Jordan", "Taylor"].map((name, idx) => (
-            <motion.div
-              key={name}
-              className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-1"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.2 }}
-            >
-              <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full mb-4" />
-              <h3 className="font-semibold text-xl">{name}</h3>
-              <p className="text-gray-500">Full Stack Developer</p>
-            </motion.div>
-          ))}
+
+{/* TEAM SECTION */}
+<section className="py-24 px-6 max-w-6xl mx-auto">
+  <h2 className="text-3xl font-bold text-center mb-12">Meet the Creators</h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+    {[
+      { name: "Javed Jabbar", role: "Group Leader" },
+      { name: "Hina Kanwal", role: "Group Member" },
+      { name: "Tooba Kashif", role: "Group Member" },
+    ].map(({ name, role }, idx) => (
+      <motion.div
+        key={name}
+        className="bg-white p-6 rounded-2xl shadow-md hover:shadow-lg transition-transform transform hover:-translate-y-1"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: idx * 0.2 }}
+      >
+        <div className="relative w-24 h-24 mx-auto mb-4">
+          <div className="w-24 h-24 bg-gray-200 rounded-full" />
+          <FaUser className="absolute inset-0 m-auto text-blue-500" size={40} />
         </div>
-      </section>
+        <h3 className="font-semibold text-xl">{name}</h3>
+        <p className="text-gray-500">{role}</p>
+      </motion.div>
+    ))}
+  </div>
+</section>
 
       {/* FOOTER */}
       <footer className="bg-black text-white py-10">

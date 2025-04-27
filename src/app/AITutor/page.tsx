@@ -1,18 +1,41 @@
 "use client"; // Mark this as a client component
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
-import Footer from "@/components/Footer"; // Import Footer Component
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Footer from "@/components/Footer";
 
 const AiTutor = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // New: Track auth status
   const router = useRouter();
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-  // Function to handle button click and navigate to TutorHome page
+  // New: Check if user is authenticated
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/auth/check", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          setIsAuthenticated(data.isAuthenticated); // Expect API to return { isAuthenticated: true/false }
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  // Function to handle button click and navigate accordingly
   const handleTryTutorNowClick = () => {
-    router.push("/TutorHome"); // This will navigate to the TutorHome page
+    if (isAuthenticated) {
+      router.push("/TutorHome"); // If authenticated, go to TutorHome
+    } else {
+      router.push("/SignIn"); // Otherwise, redirect to Signin page
+    }
   };
 
   return (
@@ -86,7 +109,7 @@ const AiTutor = () => {
         {/* AI Tutor Demo Button */}
         <section className="text-center">
           <button
-            onClick={handleTryTutorNowClick} // Navigate to TutorHome page when clicked
+            onClick={handleTryTutorNowClick}
             className="px-6 py-2 text-lg text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700 transition"
           >
             Try the AI Tutor Now
