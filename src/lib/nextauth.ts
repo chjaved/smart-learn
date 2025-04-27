@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
           where: { email: credentials.email },
         });
 
-        // Simple plaintext password check instead of bcrypt
+        
         if (user && user.password === credentials.password) {
           return {
             id: user.id,
