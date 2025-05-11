@@ -31,12 +31,8 @@ const AiTutor = () => {
 
   // Function to handle button click and navigate accordingly
   const handleTryTutorNowClick = () => {
-    if (isAuthenticated) {
-      router.push("/TutorHome"); // If authenticated, go to TutorHome
-    } else {
-      router.push("/SignIn"); // Otherwise, redirect to Signin page
-    }
-  };
+  router.push("/TutorHome");
+};
 
   return (
     <div className="flex flex-col min-h-screen">
